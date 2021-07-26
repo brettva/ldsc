@@ -12,6 +12,7 @@ from scipy.stats import chi2
 from ldscore import sumstats
 from ldsc import MASTHEAD, Logger, sec_to_str
 import time
+
 np.seterr(invalid='ignore')
 
 try:
@@ -46,7 +47,7 @@ default_cnames = {
     # P-VALUE
     'P': 'P',
     'PVALUE': 'P',
-    'P_VALUE':  'P',
+    'P_VALUE': 'P',
     'PVAL': 'P',
     'P_VAL': 'P',
     'GC_PVALUE': 'P',
@@ -122,6 +123,7 @@ describe_cname = {
 
 numeric_cols = ['P', 'N', 'N_CAS', 'N_CON', 'Z', 'OR', 'BETA', 'LOG_ODDS', 'INFO', 'FRQ', 'SIGNED_SUMSTAT', 'NSTUDY']
 
+
 def read_header(fh):
     '''Read the first line of a file and returns a list with the column names.'''
     (openfunc, compression) = get_compression(fh)
@@ -194,7 +196,7 @@ def filter_info(info, log, args):
         ii = info >= args.info_min
     elif type(info) is pd.DataFrame:  # several INFO columns
         jj = (((info > 2.0) & info.notnull()).any(axis=1) | (
-            (info < 0) & info.notnull()).any(axis=1))
+                (info < 0) & info.notnull()).any(axis=1))
         ii = (info.sum(axis=1) >= args.info_min * (len(info.columns)))
     else:
         raise ValueError('Expected pd.DataFrame or pd.Series.')
@@ -446,21 +448,22 @@ def allele_merge(dat, alleles, log):
     dat.drop(['MA'], axis=1, inplace=True)
     return dat
 
+
 parser = argparse.ArgumentParser()
 parser.add_argument('--sumstats', default=None, type=str,
                     help="Input filename.")
 parser.add_argument('--N', default=None, type=float,
                     help="Sample size If this option is not set, will try to infer the sample "
-                    "size from the input file. If the input file contains a sample size "
-                    "column, and this flag is set, the argument to this flag has priority.")
+                         "size from the input file. If the input file contains a sample size "
+                         "column, and this flag is set, the argument to this flag has priority.")
 parser.add_argument('--N-cas', default=None, type=float,
                     help="Number of cases. If this option is not set, will try to infer the number "
-                    "of cases from the input file. If the input file contains a number of cases "
-                    "column, and this flag is set, the argument to this flag has priority.")
+                         "of cases from the input file. If the input file contains a number of cases "
+                         "column, and this flag is set, the argument to this flag has priority.")
 parser.add_argument('--N-con', default=None, type=float,
                     help="Number of controls. If this option is not set, will try to infer the number "
-                    "of controls from the input file. If the input file contains a number of controls "
-                    "column, and this flag is set, the argument to this flag has priority.")
+                         "of controls from the input file. If the input file contains a number of controls "
+                         "column, and this flag is set, the argument to this flag has priority.")
 parser.add_argument('--out', default=None, type=str,
                     help="Output filename prefix.")
 parser.add_argument('--info-min', default=0.9, type=float,
@@ -471,13 +474,13 @@ parser.add_argument('--daner', default=False, action='store_true',
                     help="Use this flag to parse Stephan Ripke's daner* file format.")
 parser.add_argument('--daner-n', default=False, action='store_true',
                     help="Use this flag to parse more recent daner* formatted files, which "
-		    "include sample size column 'Nca' and 'Nco'.")
+                         "include sample size column 'Nca' and 'Nco'.")
 parser.add_argument('--no-alleles', default=False, action="store_true",
                     help="Don't require alleles. Useful if only unsigned summary statistics are available "
-                    "and the goal is h2 / partitioned h2 estimation rather than rg estimation.")
+                         "and the goal is h2 / partitioned h2 estimation rather than rg estimation.")
 parser.add_argument('--merge-alleles', default=None, type=str,
                     help="Same as --merge, except the file should have three columns: SNP, A1, A2, "
-                    "and all alleles will be matched to the --merge-alleles file alleles.")
+                         "and all alleles will be matched to the --merge-alleles file alleles.")
 parser.add_argument('--n-min', default=None, type=float,
                     help='Minimum N (sample size). Default is (90th percentile N) / 2.')
 parser.add_argument('--chunksize', default=5e6, type=int,
@@ -510,7 +513,7 @@ parser.add_argument('--nstudy', default=None, type=str,
                     help='Name of NSTUDY column (if not a name that ldsc understands). NB: case insensitive.')
 parser.add_argument('--nstudy-min', default=None, type=float,
                     help='Minimum # of studies. Default is to remove everything below the max, unless there is an N column,'
-                    ' in which case do nothing.')
+                         ' in which case do nothing.')
 parser.add_argument('--ignore', default=None, type=str,
                     help='Comma-separated list of column names to ignore.')
 parser.add_argument('--a1-inc', default=False, action='store_true',
@@ -533,8 +536,8 @@ def munge_sumstats(args, p=True):
             raise ValueError(
                 '--no-alleles and --merge-alleles are not compatible.')
         if args.daner and args.daner_n:
-            raise ValueError('--daner and --daner-n are not compatible. Use --daner for sample ' + 
-	        'size from FRQ_A/FRQ_U headers, use --daner-n for values from Nca/Nco columns')
+            raise ValueError('--daner and --daner-n are not compatible. Use --daner for sample ' +
+                             'size from FRQ_A/FRQ_U headers, use --daner-n for values from Nca/Nco columns')
 
         if p:
             defaults = vars(parser.parse_args(''))
@@ -543,9 +546,9 @@ def munge_sumstats(args, p=True):
             header = MASTHEAD
             header += "Call: \n"
             header += './munge_sumstats.py \\\n'
-            options = ['--'+x.replace('_','-')+' '+str(opts[x])+' \\' for x in non_defaults]
-            header += '\n'.join(options).replace('True','').replace('False','')
-            header = header[0:-1]+'\n'
+            options = ['--' + x.replace('_', '-') + ' ' + str(opts[x]) + ' \\' for x in non_defaults]
+            header += '\n'.join(options).replace('True', '').replace('False', '')
+            header = header[0:-1] + '\n'
             log.log(header)
 
         file_cnames = read_header(args.sumstats)  # note keys not cleaned
@@ -580,21 +583,21 @@ def munge_sumstats(args, p=True):
 
             cname_map[frq_u] = 'FRQ'
 
-	if args.daner_n:
-	    frq_u = filter(lambda x: x.startswith('FRQ_U_'), file_cnames)[0]
-	    cname_map[frq_u] = 'FRQ'
-	    try:
-	        dan_cas = clean_header(file_cnames[file_cnames.index('Nca')])
-	    except ValueError:
-	        raise ValueError('Could not find Nca column expected for daner-n format')
-	
-	    try:
-	        dan_con = clean_header(file_cnames[file_cnames.index('Nco')])
-	    except ValueError:
-	        raise ValueError('Could not find Nco column expected for daner-n format')
+        if args.daner_n:
+            frq_u = filter(lambda x: x.startswith('FRQ_U_'), file_cnames)[0]
+            cname_map[frq_u] = 'FRQ'
+            try:
+                dan_cas = clean_header(file_cnames[file_cnames.index('Nca')])
+            except ValueError:
+                raise ValueError('Could not find Nca column expected for daner-n format')
+
+            try:
+                dan_con = clean_header(file_cnames[file_cnames.index('Nco')])
+            except ValueError:
+                raise ValueError('Could not find Nco column expected for daner-n format')
 
             cname_map[dan_cas] = 'N_CAS'
-	    cname_map[dan_con] = 'N_CON'
+            cname_map[dan_con] = 'N_CON'
 
         cname_translation = {x: cname_map[clean_header(x)] for x in file_cnames if
                              clean_header(x) in cname_map}  # note keys not cleaned
@@ -627,21 +630,21 @@ def munge_sumstats(args, p=True):
                 raise ValueError('Could not find {C} column.'.format(C=c))
 
         # check aren't any duplicated column names in mapping
-	for field in cname_translation:
-	    numk = file_cnames.count(field)
-	    if numk > 1:
-		raise ValueError('Found {num} columns named {C}'.format(C=field,num=str(numk)))
+        for field in cname_translation:
+            numk = file_cnames.count(field)
+            if numk > 1:
+                raise ValueError('Found {num} columns named {C}'.format(C=field, num=str(numk)))
 
         # check multiple different column names don't map to same data field
         for head in cname_translation.values():
             numc = cname_translation.values().count(head)
-	    if numc > 1:
-                raise ValueError('Found {num} different {C} columns'.format(C=head,num=str(numc)))
+            if numc > 1:
+                raise ValueError('Found {num} different {C} columns'.format(C=head, num=str(numc)))
 
-        if (not args.N) and (not (args.N_cas and args.N_con)) and ('N' not in cname_translation.values()) and\
+        if (not args.N) and (not (args.N_cas and args.N_con)) and ('N' not in cname_translation.values()) and \
                 (any(x not in cname_translation.values() for x in ['N_CAS', 'N_CON'])):
             raise ValueError('Could not determine N.')
-        if ('N' in cname_translation.values() or all(x in cname_translation.values() for x in ['N_CAS', 'N_CON']))\
+        if ('N' in cname_translation.values() or all(x in cname_translation.values() for x in ['N_CAS', 'N_CON'])) \
                 and 'NSTUDY' in cname_translation.values():
             nstudy = [
                 x for x in cname_translation if cname_translation[x] == 'NSTUDY']
@@ -667,7 +670,7 @@ def munge_sumstats(args, p=True):
             log.log(
                 'Read {N} SNPs for allele merge.'.format(N=len(merge_alleles)))
             merge_alleles['MA'] = (
-                merge_alleles.A1 + merge_alleles.A2).apply(lambda y: y.upper())
+                    merge_alleles.A1 + merge_alleles.A2).apply(lambda y: y.upper())
             merge_alleles.drop(
                 [x for x in merge_alleles.columns if x not in ['SNP', 'MA']], axis=1, inplace=True)
         else:
@@ -677,11 +680,11 @@ def munge_sumstats(args, p=True):
 
         # figure out which columns are going to involve sign information, so we can ensure
         # they're read as floats
-        signed_sumstat_cols = [k for k,v in cname_translation.items() if v=='SIGNED_SUMSTAT']
+        signed_sumstat_cols = [k for k, v in cname_translation.items() if v == 'SIGNED_SUMSTAT']
         dat_gen = pd.read_csv(args.sumstats, delim_whitespace=True, header=0,
-                compression=compression, usecols=cname_translation.keys(),
-                na_values=['.', 'NA'], iterator=True, chunksize=args.chunksize,
-                dtype={c:np.float64 for c in signed_sumstat_cols})
+                              compression=compression, usecols=cname_translation.keys(),
+                              na_values=['.', 'NA'], iterator=True, chunksize=args.chunksize,
+                              dtype={c: np.float64 for c in signed_sumstat_cols})
 
         dat = parse_dat(dat_gen, cname_translation, merge_alleles, log, args)
         if len(dat) == 0:
@@ -714,16 +717,24 @@ def munge_sumstats(args, p=True):
         msg = 'Writing summary statistics for {M} SNPs ({N} with nonmissing beta) to {F}.'
         log.log(
             msg.format(M=len(dat), F=out_fname + '.gz', N=dat.N.notnull().sum()))
-        if p:
-            dat.to_csv(out_fname + '.gz', sep="\t", index=False,
-                       columns=print_colnames, float_format='%.3f', compression = 'gzip')
 
-        log.log('\nMetadata:')
         CHISQ = (dat.Z ** 2)
         mean_chisq = CHISQ.mean()
         log.log('Mean chi^2 = ' + str(round(mean_chisq, 3)))
+        log.log('\nMetadata:')
         if mean_chisq < 1.02:
             log.log("WARNING: mean chi^2 may be too small.")
+
+        if p:
+            if mean_chisq < 1.02:
+                pd.DataFrame({'warning:': ['mean_chisq < 1.02: chisq:' + str(mean_chisq)]}).to_csv(out_fname + '.gz',
+                                                                                                   sep="\t",
+                                                                                                   index=False,
+                                                                                                   compression='gzip')
+
+            else:
+                dat.to_csv(out_fname + '.gz', sep="\t", index=False,
+                           columns=print_colnames, float_format='%.3f', compression='gzip')
 
         log.log('Lambda GC = ' + str(round(CHISQ.median() / 0.4549, 3)))
         log.log('Max chi^2 = ' + str(round(CHISQ.max(), 3)))
@@ -740,6 +751,7 @@ def munge_sumstats(args, p=True):
         log.log('\nConversion finished at {T}'.format(T=time.ctime()))
         log.log('Total time elapsed: {T}'.format(
             T=sec_to_str(round(time.time() - START_TIME, 2))))
+
 
 if __name__ == '__main__':
     munge_sumstats(parser.parse_args(), p=True)
